@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Number Prediction System</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #111827, #1e3a8a);
+      color: white;
+    }
+
+    .container {
+      width: 90%;
+      max-width: 420px;
+      padding: 30px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #cbd5e1;
+      margin-bottom: 25px;
+    }
+
+    .number {
+      width: 150px;
+      height: 150px;
+      margin: 25px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      background: #2563eb;
+      font-size: 70px;
+      font-weight: bold;
+      box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #22c55e;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #16a34a;
+      transform: scale(1.02);
+    }
+
+    .history {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .history h3 {
+      margin-bottom: 10px;
+    }
+
+    #historyList {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .history-item {
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: #334155;
+    }
+
+    .note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Number Predictor</h1>
+    <div class="subtitle">Predict a number between 0 and 9</div>
+
+    <div class="number" id="prediction">?</div>
+
+    <button onclick="predictNumber()">
+      Predict Number
+    </button>
+
+    <div class="history">
+      <h3>Prediction History</h3>
+      <div id="historyList"></div>
+    </div>
+
+    <div class="note">
+      Predictions are randomly generated for demonstration purposes.
+    </div>
+  </div>
+
+  <script>
+    const history = [];
+
+    function predictNumber() {
+      // Generate a random number from 0 to 9
+      const prediction = Math.floor(Math.random() * 10);
+
+      // Display prediction
+      document.getElementById("prediction").textContent = prediction;
+
+      // Add to history
+      history.unshift(prediction);
+
+      // Keep only the last 10 predictions
+      if (history.length > 10) {
+        history.pop();
+      }
+
+      // Update history display
+      const historyList = document.getElementById("historyList");
+
+      historyList.innerHTML = history
+        .map(num => `<div class="history-item">${num}</div>`)
+        .join("");
+    }
+  </script>
+
+</body>
+</html>
