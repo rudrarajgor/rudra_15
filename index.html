@@ -3,153 +3,696 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Number Prediction System</title>
+  <title>Quiz Management System</title>
 
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      margin: 0;
+      font-family: Arial, sans-serif;
       min-height: 100vh;
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #111827, #1e3a8a);
-      color: white;
+      padding: 20px;
     }
 
     .container {
-      width: 90%;
-      max-width: 420px;
-      padding: 30px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.1);
+      width: 100%;
+      max-width: 700px;
+      background: white;
       border-radius: 20px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
+      padding: 30px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
     }
 
     h1 {
+      text-align: center;
+      color: #312e81;
       margin-bottom: 10px;
     }
 
     .subtitle {
-      color: #cbd5e1;
+      text-align: center;
+      color: #666;
       margin-bottom: 25px;
     }
 
-    .number {
-      width: 150px;
-      height: 150px;
-      margin: 25px auto;
+    .top-bar {
       display: flex;
-      justify-content: center;
+      justify-content: space-between;
       align-items: center;
-      border-radius: 50%;
-      background: #2563eb;
-      font-size: 70px;
+      margin-bottom: 20px;
+      padding: 12px 15px;
+      background: #f3f4f6;
+      border-radius: 10px;
+    }
+
+    .timer {
+      color: #dc2626;
       font-weight: bold;
-      box-shadow: 0 0 30px rgba(37, 99, 235, 0.6);
+    }
+
+    .progress {
+      color: #4f46e5;
+      font-weight: bold;
+    }
+
+    .question {
+      font-size: 22px;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .options {
+      display: grid;
+      gap: 12px;
+    }
+
+    .option {
+      padding: 15px;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      background: white;
+      font-size: 16px;
+    }
+
+    .option:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+
+    .option.selected {
+      background: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+    }
+
+    .option.correct {
+      background: #16a34a;
+      color: white;
+      border-color: #16a34a;
+    }
+
+    .option.wrong {
+      background: #dc2626;
+      color: white;
+      border-color: #dc2626;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 25px;
     }
 
     button {
-      width: 100%;
+      flex: 1;
       padding: 14px;
       border: none;
       border-radius: 10px;
-      background: #22c55e;
-      color: white;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       cursor: pointer;
       transition: 0.2s;
     }
 
-    button:hover {
-      background: #16a34a;
-      transform: scale(1.02);
+    .next-btn {
+      background: #4f46e5;
+      color: white;
     }
 
-    .history {
+    .next-btn:hover {
+      background: #4338ca;
+    }
+
+    .restart-btn {
+      background: #16a34a;
+      color: white;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+    }
+
+    .result {
+      display: none;
+      text-align: center;
+    }
+
+    .result h2 {
+      color: #312e81;
+      margin-bottom: 20px;
+    }
+
+    .score-circle {
+      width: 150px;
+      height: 150px;
+      margin: 20px auto;
+      border-radius: 50%;
+      background: #4f46e5;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .score-circle .score {
+      font-size: 40px;
+      font-weight: bold;
+    }
+
+    .result-info {
+      margin: 20px 0;
+      line-height: 2;
+      font-size: 18px;
+    }
+
+    .review {
       margin-top: 25px;
       text-align: left;
     }
 
-    .history h3 {
+    .review-item {
+      padding: 15px;
       margin-bottom: 10px;
+      border-radius: 10px;
+      background: #f3f4f6;
     }
 
-    #historyList {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .review-item.correct-answer {
+      border-left: 5px solid #16a34a;
     }
 
-    .history-item {
-      padding: 8px 12px;
-      border-radius: 8px;
-      background: #334155;
+    .review-item.wrong-answer {
+      border-left: 5px solid #dc2626;
     }
 
-    .note {
-      margin-top: 20px;
-      font-size: 12px;
-      color: #94a3b8;
+    .hidden {
+      display: none;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      .question {
+        font-size: 19px;
+      }
+
+      .top-bar {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Number Predictor</h1>
-    <div class="subtitle">Predict a number between 0 and 9</div>
+<div class="container">
 
-    <div class="number" id="prediction">?</div>
+  <!-- QUIZ SECTION -->
+  <div id="quizSection">
 
-    <button onclick="predictNumber()">
-      Predict Number
-    </button>
+    <h1>Quiz Management System</h1>
+    <p class="subtitle">Test your knowledge</p>
 
-    <div class="history">
-      <h3>Prediction History</h3>
-      <div id="historyList"></div>
+    <div class="top-bar">
+      <div class="progress">
+        Question <span id="questionNumber">1</span> /
+        <span id="totalQuestions">10</span>
+      </div>
+
+      <div class="timer">
+        Time: <span id="time">60</span>s
+      </div>
     </div>
 
-    <div class="note">
-      Predictions are randomly generated for demonstration purposes.
+    <div id="question" class="question"></div>
+
+    <div id="options" class="options"></div>
+
+    <div class="buttons">
+      <button class="next-btn" onclick="nextQuestion()">
+        Next Question
+      </button>
     </div>
+
   </div>
 
-  <script>
-    const history = [];
 
-    function predictNumber() {
-      // Generate a random number from 0 to 9
-      const prediction = Math.floor(Math.random() * 10);
+  <!-- RESULT SECTION -->
+  <div id="resultSection" class="result">
 
-      // Display prediction
-      document.getElementById("prediction").textContent = prediction;
+    <h2>Quiz Completed!</h2>
 
-      // Add to history
-      history.unshift(prediction);
+    <div class="score-circle">
+      <div class="score" id="score">0</div>
+      <div>Points</div>
+    </div>
 
-      // Keep only the last 10 predictions
-      if (history.length > 10) {
-        history.pop();
+    <div class="result-info">
+      <p>
+        Correct Answers:
+        <strong id="correctAnswers">0</strong>
+      </p>
+
+      <p>
+        Wrong Answers:
+        <strong id="wrongAnswers">0</strong>
+      </p>
+
+      <p>
+        Percentage:
+        <strong id="percentage">0%</strong>
+      </p>
+
+      <p>
+        Grade:
+        <strong id="grade">-</strong>
+      </p>
+
+      <p>
+        High Score:
+        <strong id="highScore">0</strong>
+      </p>
+    </div>
+
+    <button class="restart-btn" onclick="restartQuiz()">
+      Restart Quiz
+    </button>
+
+    <div class="review">
+      <h3>Answer Review</h3>
+      <br>
+      <div id="reviewList"></div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  // ==============================
+  // QUIZ QUESTIONS
+  // ==============================
+
+  const questions = [
+    {
+      question: "What does HTML stand for?",
+      options: [
+        "Hyper Text Markup Language",
+        "High Text Machine Language",
+        "Hyperlinks Text Mark Language",
+        "Home Tool Markup Language"
+      ],
+      answer: 0
+    },
+
+    {
+      question: "Which language is used to style a web page?",
+      options: [
+        "HTML",
+        "CSS",
+        "Java",
+        "Python"
+      ],
+      answer: 1
+    },
+
+    {
+      question: "Which language is mainly used to make web pages interactive?",
+      options: [
+        "CSS",
+        "HTML",
+        "JavaScript",
+        "SQL"
+      ],
+      answer: 2
+    },
+
+    {
+      question: "Which HTML tag is used to create a paragraph?",
+      options: [
+        "<p>",
+        "<h1>",
+        "<br>",
+        "<para>"
+      ],
+      answer: 0
+    },
+
+    {
+      question: "Which CSS property changes text color?",
+      options: [
+        "font-color",
+        "text-color",
+        "color",
+        "foreground"
+      ],
+      answer: 2
+    },
+
+    {
+      question: "Which symbol is used for an ID selector in CSS?",
+      options: [
+        ".",
+        "#",
+        "*",
+        "@"
+      ],
+      answer: 1
+    },
+
+    {
+      question: "Which keyword declares a constant in JavaScript?",
+      options: [
+        "var",
+        "let",
+        "constant",
+        "const"
+      ],
+      answer: 3
+    },
+
+    {
+      question: "Which method is used to display a message in the browser console?",
+      options: [
+        "console.log()",
+        "print()",
+        "display()",
+        "message()"
+      ],
+      answer: 0
+    },
+
+    {
+      question: "Which HTML element is used to create a button?",
+      options: [
+        "<input>",
+        "<click>",
+        "<button>",
+        "<btn>"
+      ],
+      answer: 2
+    },
+
+    {
+      question: "Which storage option can save data in the user's browser?",
+      options: [
+        "localStorage",
+        "browserMemory",
+        "webStorageOnly",
+        "pageStorage"
+      ],
+      answer: 0
+    }
+  ];
+
+
+  // ==============================
+  // VARIABLES
+  // ==============================
+
+  let currentQuestion = 0;
+  let score = 0;
+  let selectedAnswer = null;
+  let userAnswers = [];
+  let timeLeft = 60;
+  let timer;
+
+
+  // ==============================
+  // START QUIZ
+  // ==============================
+
+  function startQuiz() {
+
+    currentQuestion = 0;
+    score = 0;
+    selectedAnswer = null;
+    userAnswers = [];
+    timeLeft = 60;
+
+    document.getElementById("quizSection").style.display = "block";
+    document.getElementById("resultSection").style.display = "none";
+
+    document.getElementById("totalQuestions").textContent =
+      questions.length;
+
+    showQuestion();
+
+    clearInterval(timer);
+
+    timer = setInterval(function() {
+
+      timeLeft--;
+
+      document.getElementById("time").textContent = timeLeft;
+
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        finishQuiz();
       }
 
-      // Update history display
-      const historyList = document.getElementById("historyList");
+    }, 1000);
+  }
 
-      historyList.innerHTML = history
-        .map(num => `<div class="history-item">${num}</div>`)
-        .join("");
+
+  // ==============================
+  // SHOW QUESTION
+  // ==============================
+
+  function showQuestion() {
+
+    selectedAnswer = null;
+
+    const questionData = questions[currentQuestion];
+
+    document.getElementById("questionNumber").textContent =
+      currentQuestion + 1;
+
+    document.getElementById("question").textContent =
+      questionData.question;
+
+    const optionsContainer =
+      document.getElementById("options");
+
+    optionsContainer.innerHTML = "";
+
+    questionData.options.forEach(function(option, index) {
+
+      const optionElement = document.createElement("div");
+
+      optionElement.className = "option";
+
+      optionElement.textContent = option;
+
+      optionElement.onclick = function() {
+        selectAnswer(index);
+      };
+
+      optionsContainer.appendChild(optionElement);
+
+    });
+  }
+
+
+  // ==============================
+  // SELECT ANSWER
+  // ==============================
+
+  function selectAnswer(index) {
+
+    selectedAnswer = index;
+
+    const options =
+      document.querySelectorAll(".option");
+
+    options.forEach(function(option) {
+      option.classList.remove("selected");
+    });
+
+    options[index].classList.add("selected");
+  }
+
+
+  // ==============================
+  // NEXT QUESTION
+  // ==============================
+
+  function nextQuestion() {
+
+    if (selectedAnswer === null) {
+      alert("Please select an answer first.");
+      return;
     }
-  </script>
+
+    const correctAnswer =
+      questions[currentQuestion].answer;
+
+    userAnswers.push({
+      question: questions[currentQuestion].question,
+      selected: questions[currentQuestion].options[selectedAnswer],
+      correct: questions[currentQuestion].options[correctAnswer],
+      isCorrect: selectedAnswer === correctAnswer
+    });
+
+    if (selectedAnswer === correctAnswer) {
+      score++;
+    }
+
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+
+      showQuestion();
+
+    } else {
+
+      finishQuiz();
+
+    }
+  }
+
+
+  // ==============================
+  // FINISH QUIZ
+  // ==============================
+
+  function finishQuiz() {
+
+    clearInterval(timer);
+
+    document.getElementById("quizSection").style.display =
+      "none";
+
+    document.getElementById("resultSection").style.display =
+      "block";
+
+    const total = questions.length;
+
+    const wrong = total - score;
+
+    const percentage =
+      Math.round((score / total) * 100);
+
+    let grade;
+
+    if (percentage >= 90) {
+      grade = "A+";
+    } else if (percentage >= 80) {
+      grade = "A";
+    } else if (percentage >= 70) {
+      grade = "B";
+    } else if (percentage >= 60) {
+      grade = "C";
+    } else if (percentage >= 50) {
+      grade = "D";
+    } else {
+      grade = "F";
+    }
+
+    document.getElementById("score").textContent =
+      score;
+
+    document.getElementById("correctAnswers").textContent =
+      score;
+
+    document.getElementById("wrongAnswers").textContent =
+      wrong;
+
+    document.getElementById("percentage").textContent =
+      percentage + "%";
+
+    document.getElementById("grade").textContent =
+      grade;
+
+
+    // ==============================
+    // HIGH SCORE
+    // ==============================
+
+    let highScore =
+      localStorage.getItem("quizHighScore");
+
+    if (!highScore || score > Number(highScore)) {
+
+      highScore = score;
+
+      localStorage.setItem(
+        "quizHighScore",
+        highScore
+      );
+    }
+
+    document.getElementById("highScore").textContent =
+      highScore;
+
+
+    // ==============================
+    // ANSWER REVIEW
+    // ==============================
+
+    const reviewList =
+      document.getElementById("reviewList");
+
+    reviewList.innerHTML = "";
+
+    userAnswers.forEach(function(item, index) {
+
+      const reviewItem =
+        document.createElement("div");
+
+      reviewItem.className =
+        "review-item " +
+        (item.isCorrect
+          ? "correct-answer"
+          : "wrong-answer");
+
+      reviewItem.innerHTML = `
+        <strong>Q${index + 1}. ${item.question}</strong>
+        <br><br>
+        Your Answer: ${item.selected}
+        <br>
+        Correct Answer: ${item.correct}
+      `;
+
+      reviewList.appendChild(reviewItem);
+
+    });
+  }
+
+
+  // ==============================
+  // RESTART QUIZ
+  // ==============================
+
+  function restartQuiz() {
+    startQuiz();
+  }
+
+
+  // ==============================
+  // START APPLICATION
+  // ==============================
+
+  startQuiz();
+
+</script>
 
 </body>
 </html>
