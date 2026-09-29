@@ -1,696 +1,1619 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Management System</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+<title>Quiz Management System</title>
 
-    body {
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #4f46e5, #7c3aed);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+}
+
+h1, h2 {
+    text-align: center;
+    color: #312e81;
+    margin-bottom: 20px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* LOGIN */
+
+.login-container {
+    max-width: 450px;
+    margin: 80px auto;
+}
+
+.login-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.login-buttons button {
+    flex: 1;
+}
+
+input, select {
+    width: 100%;
+    padding: 13px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+button {
+    border: none;
+    border-radius: 8px;
+    padding: 13px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.primary:hover {
+    background: #4338ca;
+}
+
+.success {
+    background: #16a34a;
+    color: white;
+}
+
+.danger {
+    background: #dc2626;
+    color: white;
+}
+
+.secondary {
+    background: #64748b;
+    color: white;
+}
+
+/* NAVBAR */
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f3f4f6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.navbar strong {
+    color: #312e81;
+}
+
+/* TEACHER */
+
+.form-box {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+}
+
+.form-box h3 {
+    color: #312e81;
+    margin-bottom: 15px;
+}
+
+.question-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-radius: 10px;
+    background: white;
+}
+
+.question-card strong {
+    color: #312e81;
+}
+
+.question-card button {
+    margin-top: 10px;
+}
+
+/* STUDENT */
+
+.quiz-top {
+    display: flex;
+    justify-content: space-between;
+    background: #f3f4f6;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.timer {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+.question {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.option {
+    border: 2px solid #ddd;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background: #eef2ff;
+    border-color: #4f46e5;
+}
+
+.option.selected {
+    background: #4f46e5;
+    color: white;
+    border-color: #4f46e5;
+}
+
+/* RESULT */
+
+.result {
+    text-align: center;
+}
+
+.score {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: #4f46e5;
+    color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 45px;
+    font-weight: bold;
+}
+
+.result-box {
+    line-height: 2;
+    font-size: 18px;
+}
+
+.history {
+    margin-top: 25px;
+    text-align: left;
+}
+
+.history-item {
+    padding: 15px;
+    background: #f8fafc;
+    border-left: 5px solid #4f46e5;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+@media(max-width:600px) {
 
     .container {
-      width: 100%;
-      max-width: 700px;
-      background: white;
-      border-radius: 20px;
-      padding: 30px;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
-    }
-
-    h1 {
-      text-align: center;
-      color: #312e81;
-      margin-bottom: 10px;
-    }
-
-    .subtitle {
-      text-align: center;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-      padding: 12px 15px;
-      background: #f3f4f6;
-      border-radius: 10px;
-    }
-
-    .timer {
-      color: #dc2626;
-      font-weight: bold;
-    }
-
-    .progress {
-      color: #4f46e5;
-      font-weight: bold;
-    }
-
-    .question {
-      font-size: 22px;
-      font-weight: bold;
-      color: #111827;
-      margin-bottom: 20px;
-      line-height: 1.4;
-    }
-
-    .options {
-      display: grid;
-      gap: 12px;
-    }
-
-    .option {
-      padding: 15px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.2s;
-      background: white;
-      font-size: 16px;
-    }
-
-    .option:hover {
-      border-color: #4f46e5;
-      background: #eef2ff;
-    }
-
-    .option.selected {
-      background: #4f46e5;
-      color: white;
-      border-color: #4f46e5;
-    }
-
-    .option.correct {
-      background: #16a34a;
-      color: white;
-      border-color: #16a34a;
-    }
-
-    .option.wrong {
-      background: #dc2626;
-      color: white;
-      border-color: #dc2626;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 25px;
-    }
-
-    button {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .next-btn {
-      background: #4f46e5;
-      color: white;
-    }
-
-    .next-btn:hover {
-      background: #4338ca;
-    }
-
-    .restart-btn {
-      background: #16a34a;
-      color: white;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-    }
-
-    .result {
-      display: none;
-      text-align: center;
-    }
-
-    .result h2 {
-      color: #312e81;
-      margin-bottom: 20px;
-    }
-
-    .score-circle {
-      width: 150px;
-      height: 150px;
-      margin: 20px auto;
-      border-radius: 50%;
-      background: #4f46e5;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .score-circle .score {
-      font-size: 40px;
-      font-weight: bold;
-    }
-
-    .result-info {
-      margin: 20px 0;
-      line-height: 2;
-      font-size: 18px;
-    }
-
-    .review {
-      margin-top: 25px;
-      text-align: left;
-    }
-
-    .review-item {
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 10px;
-      background: #f3f4f6;
-    }
-
-    .review-item.correct-answer {
-      border-left: 5px solid #16a34a;
-    }
-
-    .review-item.wrong-answer {
-      border-left: 5px solid #dc2626;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      .container {
         padding: 20px;
-      }
-
-      .question {
-        font-size: 19px;
-      }
-
-      .top-bar {
-        font-size: 14px;
-      }
     }
-  </style>
+
+    .login-buttons {
+        flex-direction: column;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+}
+
+</style>
 </head>
 
 <body>
 
-<div class="container">
 
-  <!-- QUIZ SECTION -->
-  <div id="quizSection">
+<!-- =====================================================
+                    LOGIN PAGE
+====================================================== -->
+
+<div id="loginPage" class="container login-container">
 
     <h1>Quiz Management System</h1>
-    <p class="subtitle">Test your knowledge</p>
 
-    <div class="top-bar">
-      <div class="progress">
-        Question <span id="questionNumber">1</span> /
-        <span id="totalQuestions">10</span>
-      </div>
+    <p class="subtitle">
+        Login as Teacher or Student
+    </p>
 
-      <div class="timer">
-        Time: <span id="time">60</span>s
-      </div>
+    <div class="login-buttons">
+
+        <button class="primary"
+                onclick="showLogin('teacher')">
+            Teacher
+        </button>
+
+        <button class="success"
+                onclick="showLogin('student')">
+            Student
+        </button>
+
     </div>
 
-    <div id="question" class="question"></div>
 
-    <div id="options" class="options"></div>
+    <!-- TEACHER LOGIN -->
 
-    <div class="buttons">
-      <button class="next-btn" onclick="nextQuestion()">
+    <div id="teacherLogin" class="hidden">
+
+        <h2>Teacher Login</h2>
+
+        <input
+            type="text"
+            id="teacherUsername"
+            placeholder="Teacher Username">
+
+        <input
+            type="password"
+            id="teacherPassword"
+            placeholder="Password">
+
+        <button
+            class="primary"
+            style="width:100%"
+            onclick="teacherLogin()">
+
+            Login
+
+        </button>
+
+        <p style="margin-top:15px;text-align:center;color:#777">
+            Demo: teacher / 1234
+        </p>
+
+    </div>
+
+
+    <!-- STUDENT LOGIN -->
+
+    <div id="studentLogin" class="hidden">
+
+        <h2>Student Login</h2>
+
+        <input
+            type="text"
+            id="studentName"
+            placeholder="Enter Student Name">
+
+        <input
+            type="text"
+            id="studentRoll"
+            placeholder="Enter Roll Number">
+
+        <button
+            class="success"
+            style="width:100%"
+            onclick="studentLogin()">
+
+            Start Quiz
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+                    TEACHER DASHBOARD
+====================================================== -->
+
+<div id="teacherDashboard"
+     class="container hidden">
+
+    <div class="navbar">
+
+        <strong>
+            Teacher Dashboard
+        </strong>
+
+        <button
+            class="danger"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+
+    <h2>Add Quiz Question</h2>
+
+
+    <div class="form-box">
+
+        <h3>Enter Question</h3>
+
+        <input
+            type="text"
+            id="questionInput"
+            placeholder="Enter your question">
+
+
+        <input
+            type="text"
+            id="option1"
+            placeholder="Option A">
+
+
+        <input
+            type="text"
+            id="option2"
+            placeholder="Option B">
+
+
+        <input
+            type="text"
+            id="option3"
+            placeholder="Option C">
+
+
+        <input
+            type="text"
+            id="option4"
+            placeholder="Option D">
+
+
+        <select id="correctAnswer">
+
+            <option value="">
+                Select Correct Answer
+            </option>
+
+            <option value="0">
+                Option A
+            </option>
+
+            <option value="1">
+                Option B
+            </option>
+
+            <option value="2">
+                Option C
+            </option>
+
+            <option value="3">
+                Option D
+            </option>
+
+        </select>
+
+
+        <button
+            class="success"
+            onclick="addQuestion()">
+
+            + Add Question
+
+        </button>
+
+    </div>
+
+
+    <h2>Question Bank</h2>
+
+    <div id="questionBank"></div>
+
+</div>
+
+
+<!-- =====================================================
+                    STUDENT QUIZ
+====================================================== -->
+
+<div id="studentQuiz"
+     class="container hidden">
+
+    <div class="navbar">
+
+        <strong id="studentWelcome">
+            Student
+        </strong>
+
+        <button
+            class="danger"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
+    </div>
+
+
+    <div class="quiz-top">
+
+        <span>
+            Question
+            <strong id="currentQuestion">1</strong>
+            /
+            <strong id="totalQuestions">0</strong>
+        </span>
+
+        <span class="timer">
+            Time:
+            <span id="timer">60</span>s
+        </span>
+
+    </div>
+
+
+    <div id="quizQuestion"
+         class="question">
+    </div>
+
+
+    <div id="quizOptions"></div>
+
+
+    <button
+        class="primary"
+        style="width:100%;margin-top:20px"
+        onclick="nextQuestion()">
+
         Next Question
-      </button>
-    </div>
 
-  </div>
-
-
-  <!-- RESULT SECTION -->
-  <div id="resultSection" class="result">
-
-    <h2>Quiz Completed!</h2>
-
-    <div class="score-circle">
-      <div class="score" id="score">0</div>
-      <div>Points</div>
-    </div>
-
-    <div class="result-info">
-      <p>
-        Correct Answers:
-        <strong id="correctAnswers">0</strong>
-      </p>
-
-      <p>
-        Wrong Answers:
-        <strong id="wrongAnswers">0</strong>
-      </p>
-
-      <p>
-        Percentage:
-        <strong id="percentage">0%</strong>
-      </p>
-
-      <p>
-        Grade:
-        <strong id="grade">-</strong>
-      </p>
-
-      <p>
-        High Score:
-        <strong id="highScore">0</strong>
-      </p>
-    </div>
-
-    <button class="restart-btn" onclick="restartQuiz()">
-      Restart Quiz
     </button>
 
-    <div class="review">
-      <h3>Answer Review</h3>
-      <br>
-      <div id="reviewList"></div>
+</div>
+
+
+<!-- =====================================================
+                    RESULT PAGE
+====================================================== -->
+
+<div id="resultPage"
+     class="container hidden">
+
+    <div class="result">
+
+        <h1>Quiz Completed!</h1>
+
+        <div class="score"
+             id="finalScore">
+
+            0
+
+        </div>
+
+        <div class="result-box">
+
+            <p>
+                Student:
+                <strong id="resultStudent"></strong>
+            </p>
+
+            <p>
+                Roll Number:
+                <strong id="resultRoll"></strong>
+            </p>
+
+            <p>
+                Correct Answers:
+                <strong id="correctCount"></strong>
+            </p>
+
+            <p>
+                Wrong Answers:
+                <strong id="wrongCount"></strong>
+            </p>
+
+            <p>
+                Percentage:
+                <strong id="percentage"></strong>
+            </p>
+
+            <p>
+                Grade:
+                <strong id="grade"></strong>
+            </p>
+
+        </div>
+
+
+        <button
+            class="success"
+            style="margin-top:20px"
+            onclick="studentAgain()">
+
+            Take Quiz Again
+
+        </button>
+
+        <button
+            class="secondary"
+            style="margin-top:10px"
+            onclick="logout()">
+
+            Logout
+
+        </button>
+
     </div>
 
-  </div>
+
+    <div class="history">
+
+        <h2>Quiz History</h2>
+
+        <div id="studentHistory"></div>
+
+    </div>
 
 </div>
 
 
 <script>
 
-  // ==============================
-  // QUIZ QUESTIONS
-  // ==============================
 
-  const questions = [
+/* =====================================================
+                DEFAULT QUESTIONS
+====================================================== */
+
+const defaultQuestions = [
+
     {
-      question: "What does HTML stand for?",
-      options: [
-        "Hyper Text Markup Language",
-        "High Text Machine Language",
-        "Hyperlinks Text Mark Language",
-        "Home Tool Markup Language"
-      ],
-      answer: 0
+        question: "What does HTML stand for?",
+        options: [
+            "Hyper Text Markup Language",
+            "High Text Machine Language",
+            "Hyperlinks Text Mark Language",
+            "Home Tool Markup Language"
+        ],
+        answer: 0
     },
 
     {
-      question: "Which language is used to style a web page?",
-      options: [
-        "HTML",
-        "CSS",
-        "Java",
-        "Python"
-      ],
-      answer: 1
+        question: "Which language is used to style a website?",
+        options: [
+            "HTML",
+            "CSS",
+            "Java",
+            "Python"
+        ],
+        answer: 1
     },
 
     {
-      question: "Which language is mainly used to make web pages interactive?",
-      options: [
-        "CSS",
-        "HTML",
-        "JavaScript",
-        "SQL"
-      ],
-      answer: 2
+        question: "Which language makes a webpage interactive?",
+        options: [
+            "HTML",
+            "CSS",
+            "JavaScript",
+            "SQL"
+        ],
+        answer: 2
     },
 
     {
-      question: "Which HTML tag is used to create a paragraph?",
-      options: [
-        "<p>",
-        "<h1>",
-        "<br>",
-        "<para>"
-      ],
-      answer: 0
-    },
-
-    {
-      question: "Which CSS property changes text color?",
-      options: [
-        "font-color",
-        "text-color",
-        "color",
-        "foreground"
-      ],
-      answer: 2
-    },
-
-    {
-      question: "Which symbol is used for an ID selector in CSS?",
-      options: [
-        ".",
-        "#",
-        "*",
-        "@"
-      ],
-      answer: 1
-    },
-
-    {
-      question: "Which keyword declares a constant in JavaScript?",
-      options: [
-        "var",
-        "let",
-        "constant",
-        "const"
-      ],
-      answer: 3
-    },
-
-    {
-      question: "Which method is used to display a message in the browser console?",
-      options: [
-        "console.log()",
-        "print()",
-        "display()",
-        "message()"
-      ],
-      answer: 0
-    },
-
-    {
-      question: "Which HTML element is used to create a button?",
-      options: [
-        "<input>",
-        "<click>",
-        "<button>",
-        "<btn>"
-      ],
-      answer: 2
-    },
-
-    {
-      question: "Which storage option can save data in the user's browser?",
-      options: [
-        "localStorage",
-        "browserMemory",
-        "webStorageOnly",
-        "pageStorage"
-      ],
-      answer: 0
+        question: "Which tag creates a paragraph?",
+        options: [
+            "<p>",
+            "<h1>",
+            "<br>",
+            "<para>"
+        ],
+        answer: 0
     }
-  ];
+
+];
 
 
-  // ==============================
-  // VARIABLES
-  // ==============================
+/* =====================================================
+                LOCAL STORAGE
+====================================================== */
 
-  let currentQuestion = 0;
-  let score = 0;
-  let selectedAnswer = null;
-  let userAnswers = [];
-  let timeLeft = 60;
-  let timer;
+if (!localStorage.getItem("quizQuestions")) {
+
+    localStorage.setItem(
+        "quizQuestions",
+        JSON.stringify(defaultQuestions)
+    );
+
+}
 
 
-  // ==============================
-  // START QUIZ
-  // ==============================
+/* =====================================================
+                GLOBAL VARIABLES
+====================================================== */
 
-  function startQuiz() {
+let questions = [];
+
+let currentQuestion = 0;
+
+let score = 0;
+
+let selectedAnswer = null;
+
+let timer;
+
+let timeLeft = 60;
+
+let student = {
+    name: "",
+    roll: ""
+};
+
+
+/* =====================================================
+                PAGE CONTROL
+====================================================== */
+
+function hideAllPages() {
+
+    document
+        .getElementById("loginPage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("teacherDashboard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("studentQuiz")
+        .classList.add("hidden");
+
+    document
+        .getElementById("resultPage")
+        .classList.add("hidden");
+
+}
+
+
+/* =====================================================
+                SHOW LOGIN
+====================================================== */
+
+function showLogin(type) {
+
+    document
+        .getElementById("teacherLogin")
+        .classList.add("hidden");
+
+    document
+        .getElementById("studentLogin")
+        .classList.add("hidden");
+
+
+    if (type === "teacher") {
+
+        document
+            .getElementById("teacherLogin")
+            .classList.remove("hidden");
+
+    }
+
+    if (type === "student") {
+
+        document
+            .getElementById("studentLogin")
+            .classList.remove("hidden");
+
+    }
+
+}
+
+
+/* =====================================================
+                TEACHER LOGIN
+====================================================== */
+
+function teacherLogin() {
+
+    const username =
+        document
+        .getElementById("teacherUsername")
+        .value;
+
+    const password =
+        document
+        .getElementById("teacherPassword")
+        .value;
+
+
+    if (
+        username === "teacher" &&
+        password === "1234"
+    ) {
+
+        hideAllPages();
+
+        document
+            .getElementById("teacherDashboard")
+            .classList.remove("hidden");
+
+        displayQuestions();
+
+    } else {
+
+        alert(
+            "Invalid teacher username or password!"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+                STUDENT LOGIN
+====================================================== */
+
+function studentLogin() {
+
+    const name =
+        document
+        .getElementById("studentName")
+        .value
+        .trim();
+
+    const roll =
+        document
+        .getElementById("studentRoll")
+        .value
+        .trim();
+
+
+    if (name === "" || roll === "") {
+
+        alert(
+            "Please enter name and roll number."
+        );
+
+        return;
+    }
+
+
+    student.name = name;
+
+    student.roll = roll;
+
+
+    startQuiz();
+
+}
+
+
+/* =====================================================
+                ADD QUESTION
+====================================================== */
+
+function addQuestion() {
+
+    const question =
+        document
+        .getElementById("questionInput")
+        .value
+        .trim();
+
+
+    const options = [
+
+        document
+        .getElementById("option1")
+        .value
+        .trim(),
+
+        document
+        .getElementById("option2")
+        .value
+        .trim(),
+
+        document
+        .getElementById("option3")
+        .value
+        .trim(),
+
+        document
+        .getElementById("option4")
+        .value
+        .trim()
+
+    ];
+
+
+    const answer =
+        document
+        .getElementById("correctAnswer")
+        .value;
+
+
+    if (
+        question === "" ||
+        options.some(option => option === "") ||
+        answer === ""
+    ) {
+
+        alert(
+            "Please fill all fields."
+        );
+
+        return;
+    }
+
+
+    const newQuestion = {
+
+        question: question,
+
+        options: options,
+
+        answer: Number(answer)
+
+    };
+
+
+    questions =
+        JSON.parse(
+            localStorage.getItem(
+                "quizQuestions"
+            )
+        );
+
+
+    questions.push(newQuestion);
+
+
+    localStorage.setItem(
+        "quizQuestions",
+        JSON.stringify(questions)
+    );
+
+
+    alert(
+        "Question added successfully!"
+    );
+
+
+    clearQuestionForm();
+
+    displayQuestions();
+
+}
+
+
+/* =====================================================
+                CLEAR FORM
+====================================================== */
+
+function clearQuestionForm() {
+
+    document
+        .getElementById("questionInput")
+        .value = "";
+
+    document
+        .getElementById("option1")
+        .value = "";
+
+    document
+        .getElementById("option2")
+        .value = "";
+
+    document
+        .getElementById("option3")
+        .value = "";
+
+    document
+        .getElementById("option4")
+        .value = "";
+
+    document
+        .getElementById("correctAnswer")
+        .value = "";
+
+}
+
+
+/* =====================================================
+                DISPLAY QUESTIONS
+====================================================== */
+
+function displayQuestions() {
+
+    questions =
+        JSON.parse(
+            localStorage.getItem(
+                "quizQuestions"
+            )
+        );
+
+
+    const bank =
+        document
+        .getElementById("questionBank");
+
+
+    bank.innerHTML = "";
+
+
+    questions.forEach(
+        function(q, index) {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "question-card";
+
+
+            div.innerHTML = `
+
+                <strong>
+                    Q${index + 1}.
+                    ${q.question}
+                </strong>
+
+                <br><br>
+
+                A. ${q.options[0]}
+                <br>
+
+                B. ${q.options[1]}
+                <br>
+
+                C. ${q.options[2]}
+                <br>
+
+                D. ${q.options[3]}
+
+                <br>
+
+                <strong>
+                    Correct Answer:
+                    ${q.options[q.answer]}
+                </strong>
+
+                <br>
+
+                <button
+                    class="danger"
+                    onclick="deleteQuestion(${index})">
+
+                    Delete
+
+                </button>
+
+            `;
+
+
+            bank.appendChild(div);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+                DELETE QUESTION
+====================================================== */
+
+function deleteQuestion(index) {
+
+    if (
+        !confirm(
+            "Delete this question?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    questions =
+        JSON.parse(
+            localStorage.getItem(
+                "quizQuestions"
+            )
+        );
+
+
+    questions.splice(index, 1);
+
+
+    localStorage.setItem(
+        "quizQuestions",
+        JSON.stringify(questions)
+    );
+
+
+    displayQuestions();
+
+}
+
+
+/* =====================================================
+                START QUIZ
+====================================================== */
+
+function startQuiz() {
+
+    questions =
+        JSON.parse(
+            localStorage.getItem(
+                "quizQuestions"
+            )
+        );
+
+
+    if (questions.length === 0) {
+
+        alert(
+            "No questions are available. Ask the teacher to add questions."
+        );
+
+        return;
+
+    }
+
 
     currentQuestion = 0;
+
     score = 0;
+
     selectedAnswer = null;
-    userAnswers = [];
+
     timeLeft = 60;
 
-    document.getElementById("quizSection").style.display = "block";
-    document.getElementById("resultSection").style.display = "none";
 
-    document.getElementById("totalQuestions").textContent =
-      questions.length;
+    document
+        .getElementById("studentWelcome")
+        .textContent =
+        "Welcome, " + student.name;
+
+
+    document
+        .getElementById("totalQuestions")
+        .textContent =
+        questions.length;
+
+
+    hideAllPages();
+
+
+    document
+        .getElementById("studentQuiz")
+        .classList.remove("hidden");
+
 
     showQuestion();
 
+
     clearInterval(timer);
 
-    timer = setInterval(function() {
 
-      timeLeft--;
+    timer =
+        setInterval(
+            function() {
 
-      document.getElementById("time").textContent = timeLeft;
+                timeLeft--;
 
-      if (timeLeft <= 0) {
-        clearInterval(timer);
-        finishQuiz();
-      }
-
-    }, 1000);
-  }
+                document
+                    .getElementById("timer")
+                    .textContent =
+                    timeLeft;
 
 
-  // ==============================
-  // SHOW QUESTION
-  // ==============================
+                if (timeLeft <= 0) {
 
-  function showQuestion() {
+                    clearInterval(timer);
+
+                    finishQuiz();
+
+                }
+
+            },
+            1000
+        );
+
+}
+
+
+/* =====================================================
+                SHOW QUESTION
+====================================================== */
+
+function showQuestion() {
 
     selectedAnswer = null;
 
-    const questionData = questions[currentQuestion];
 
-    document.getElementById("questionNumber").textContent =
-      currentQuestion + 1;
-
-    document.getElementById("question").textContent =
-      questionData.question;
-
-    const optionsContainer =
-      document.getElementById("options");
-
-    optionsContainer.innerHTML = "";
-
-    questionData.options.forEach(function(option, index) {
-
-      const optionElement = document.createElement("div");
-
-      optionElement.className = "option";
-
-      optionElement.textContent = option;
-
-      optionElement.onclick = function() {
-        selectAnswer(index);
-      };
-
-      optionsContainer.appendChild(optionElement);
-
-    });
-  }
+    const q =
+        questions[currentQuestion];
 
 
-  // ==============================
-  // SELECT ANSWER
-  // ==============================
+    document
+        .getElementById("currentQuestion")
+        .textContent =
+        currentQuestion + 1;
 
-  function selectAnswer(index) {
+
+    document
+        .getElementById("quizQuestion")
+        .textContent =
+        q.question;
+
+
+    const options =
+        document
+        .getElementById("quizOptions");
+
+
+    options.innerHTML = "";
+
+
+    q.options.forEach(
+        function(option, index) {
+
+            const div =
+                document.createElement("div");
+
+
+            div.className =
+                "option";
+
+
+            div.textContent =
+                option;
+
+
+            div.onclick =
+                function() {
+
+                    selectAnswer(
+                        index,
+                        div
+                    );
+
+                };
+
+
+            options.appendChild(div);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+                SELECT ANSWER
+====================================================== */
+
+function selectAnswer(
+    index,
+    element
+) {
 
     selectedAnswer = index;
 
+
     const options =
-      document.querySelectorAll(".option");
-
-    options.forEach(function(option) {
-      option.classList.remove("selected");
-    });
-
-    options[index].classList.add("selected");
-  }
+        document.querySelectorAll(
+            ".option"
+        );
 
 
-  // ==============================
-  // NEXT QUESTION
-  // ==============================
+    options.forEach(
+        function(option) {
 
-  function nextQuestion() {
+            option.classList.remove(
+                "selected"
+            );
+
+        }
+    );
+
+
+    element.classList.add(
+        "selected"
+    );
+
+}
+
+
+/* =====================================================
+                NEXT QUESTION
+====================================================== */
+
+function nextQuestion() {
 
     if (selectedAnswer === null) {
-      alert("Please select an answer first.");
-      return;
+
+        alert(
+            "Please select an answer."
+        );
+
+        return;
+
     }
 
-    const correctAnswer =
-      questions[currentQuestion].answer;
 
-    userAnswers.push({
-      question: questions[currentQuestion].question,
-      selected: questions[currentQuestion].options[selectedAnswer],
-      correct: questions[currentQuestion].options[correctAnswer],
-      isCorrect: selectedAnswer === correctAnswer
-    });
+    if (
+        selectedAnswer ===
+        questions[currentQuestion].answer
+    ) {
 
-    if (selectedAnswer === correctAnswer) {
-      score++;
+        score++;
+
     }
+
 
     currentQuestion++;
 
-    if (currentQuestion < questions.length) {
 
-      showQuestion();
+    if (
+        currentQuestion <
+        questions.length
+    ) {
+
+        showQuestion();
 
     } else {
 
-      finishQuiz();
+        finishQuiz();
 
     }
-  }
+
+}
 
 
-  // ==============================
-  // FINISH QUIZ
-  // ==============================
+/* =====================================================
+                FINISH QUIZ
+====================================================== */
 
-  function finishQuiz() {
+function finishQuiz() {
 
     clearInterval(timer);
 
-    document.getElementById("quizSection").style.display =
-      "none";
 
-    document.getElementById("resultSection").style.display =
-      "block";
+    const total =
+        questions.length;
 
-    const total = questions.length;
 
-    const wrong = total - score;
+    const wrong =
+        total - score;
+
 
     const percentage =
-      Math.round((score / total) * 100);
+        Math.round(
+            (score / total) * 100
+        );
+
 
     let grade;
 
+
     if (percentage >= 90) {
-      grade = "A+";
+
+        grade = "A+";
+
     } else if (percentage >= 80) {
-      grade = "A";
+
+        grade = "A";
+
     } else if (percentage >= 70) {
-      grade = "B";
+
+        grade = "B";
+
     } else if (percentage >= 60) {
-      grade = "C";
+
+        grade = "C";
+
     } else if (percentage >= 50) {
-      grade = "D";
+
+        grade = "D";
+
     } else {
-      grade = "F";
+
+        grade = "F";
+
     }
 
-    document.getElementById("score").textContent =
-      score;
 
-    document.getElementById("correctAnswers").textContent =
-      score;
-
-    document.getElementById("wrongAnswers").textContent =
-      wrong;
-
-    document.getElementById("percentage").textContent =
-      percentage + "%";
-
-    document.getElementById("grade").textContent =
-      grade;
+    document
+        .getElementById("finalScore")
+        .textContent =
+        score + "/" + total;
 
 
-    // ==============================
-    // HIGH SCORE
-    // ==============================
-
-    let highScore =
-      localStorage.getItem("quizHighScore");
-
-    if (!highScore || score > Number(highScore)) {
-
-      highScore = score;
-
-      localStorage.setItem(
-        "quizHighScore",
-        highScore
-      );
-    }
-
-    document.getElementById("highScore").textContent =
-      highScore;
+    document
+        .getElementById("resultStudent")
+        .textContent =
+        student.name;
 
 
-    // ==============================
-    // ANSWER REVIEW
-    // ==============================
+    document
+        .getElementById("resultRoll")
+        .textContent =
+        student.roll;
 
-    const reviewList =
-      document.getElementById("reviewList");
 
-    reviewList.innerHTML = "";
+    document
+        .getElementById("correctCount")
+        .textContent =
+        score;
 
-    userAnswers.forEach(function(item, index) {
 
-      const reviewItem =
-        document.createElement("div");
+    document
+        .getElementById("wrongCount")
+        .textContent =
+        wrong;
 
-      reviewItem.className =
-        "review-item " +
-        (item.isCorrect
-          ? "correct-answer"
-          : "wrong-answer");
 
-      reviewItem.innerHTML = `
-        <strong>Q${index + 1}. ${item.question}</strong>
-        <br><br>
-        Your Answer: ${item.selected}
-        <br>
-        Correct Answer: ${item.correct}
-      `;
+    document
+        .getElementById("percentage")
+        .textContent =
+        percentage + "%";
 
-      reviewList.appendChild(reviewItem);
+
+    document
+        .getElementById("grade")
+        .textContent =
+        grade;
+
+
+    saveResult(
+        score,
+        total,
+        percentage,
+        grade
+    );
+
+
+    hideAllPages();
+
+
+    document
+        .getElementById("resultPage")
+        .classList.remove("hidden");
+
+
+    displayHistory();
+
+}
+
+
+/* =====================================================
+                SAVE STUDENT RESULT
+====================================================== */
+
+function saveResult(
+    score,
+    total,
+    percentage,
+    grade
+) {
+
+    let results =
+        JSON.parse(
+            localStorage.getItem(
+                "quizResults"
+            )
+        ) || [];
+
+
+    results.push({
+
+        name: student.name,
+
+        roll: student.roll,
+
+        score: score,
+
+        total: total,
+
+        percentage: percentage,
+
+        grade: grade,
+
+        date:
+            new Date()
+            .toLocaleString()
 
     });
-  }
 
 
-  // ==============================
-  // RESTART QUIZ
-  // ==============================
+    localStorage.setItem(
+        "quizResults",
+        JSON.stringify(results)
+    );
 
-  function restartQuiz() {
+}
+
+
+/* =====================================================
+                DISPLAY HISTORY
+====================================================== */
+
+function displayHistory() {
+
+    const results =
+        JSON.parse(
+            localStorage.getItem(
+                "quizResults"
+            )
+        ) || [];
+
+
+    const history =
+        document
+        .getElementById("studentHistory");
+
+
+    history.innerHTML = "";
+
+
+    const studentResults =
+        results.filter(
+            function(result) {
+
+                return (
+                    result.roll ===
+                    student.roll
+                );
+
+            }
+        );
+
+
+    studentResults
+        .reverse()
+        .forEach(
+            function(result) {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                div.className =
+                    "history-item";
+
+
+                div.innerHTML = `
+
+                    <strong>
+                        ${result.date}
+                    </strong>
+
+                    <br>
+
+                    Score:
+                    ${result.score}/${result.total}
+
+                    <br>
+
+                    Percentage:
+                    ${result.percentage}%
+
+                    <br>
+
+                    Grade:
+                    ${result.grade}
+
+                `;
+
+
+                history.appendChild(div);
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+                TAKE QUIZ AGAIN
+====================================================== */
+
+function studentAgain() {
+
     startQuiz();
-  }
+
+}
 
 
-  // ==============================
-  // START APPLICATION
-  // ==============================
+/* =====================================================
+                LOGOUT
+====================================================== */
 
-  startQuiz();
+function logout() {
+
+    clearInterval(timer);
+
+    hideAllPages();
+
+
+    document
+        .getElementById("loginPage")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("teacherUsername")
+        .value = "";
+
+    document
+        .getElementById("teacherPassword")
+        .value = "";
+
+    document
+        .getElementById("studentName")
+        .value = "";
+
+    document
+        .getElementById("studentRoll")
+        .value = "";
+
+}
+
+
+/* =====================================================
+                INITIAL PAGE
+====================================================== */
+
+hideAllPages();
+
+document
+    .getElementById("loginPage")
+    .classList.remove("hidden");
 
 </script>
 
