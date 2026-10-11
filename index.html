@@ -1,0 +1,189 @@
+from pathlib import Path
+
+html = r'''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizHub | Quiz Management System</title>
+<style>
+:root{--primary:#4f46e5;--primary2:#4338ca;--bg:#f4f6fb;--ink:#172033;--muted:#667085;--line:#e5e7eb;--green:#15803d;--red:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(120deg,#312e81,#4f46e5,#7c3aed);color:white;padding:25px max(20px,calc((100% - 1100px)/2));display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{font-size:25px;font-weight:800;letter-spacing:.2px}.brand span{color:#c7d2fe}header p{margin:5px 0 0;color:#e0e7ff;font-size:14px}
+main{max-width:1100px;margin:28px auto;padding:0 18px 45px}.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 8px 28px #1720330a;margin-bottom:20px}
+h1,h2,h3{margin-top:0}h2{font-size:23px}h3{font-size:17px}.muted{color:var(--muted);font-size:14px;line-height:1.5}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}.tab,button{border:0;border-radius:10px;padding:11px 16px;font-weight:700;cursor:pointer;font-size:14px;transition:.15s}
+.tab{background:#e9eafe;color:#3730a3}.tab.active,button.primary{background:var(--primary);color:white}.tab:hover,button:hover{filter:brightness(.96);transform:translateY(-1px)}
+button.secondary{background:#eef2ff;color:#3730a3}button.danger{background:#fee2e2;color:#991b1b}button.ghost{background:#f3f4f6;color:#374151}button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.field{margin-bottom:14px}.field label{display:block;font-weight:700;font-size:13px;margin-bottom:7px}
+input,select,textarea{width:100%;padding:12px 13px;border:1px solid #d5d9e2;border-radius:10px;font:inherit;background:#fff;color:var(--ink);outline:none}
+input:focus,select:focus,textarea:focus{border-color:#818cf8;box-shadow:0 0 0 3px #4f46e51a}textarea{resize:vertical;min-height:82px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.notice{padding:12px 14px;border-radius:10px;background:#eef2ff;color:#3730a3;font-size:13px;line-height:1.5;margin:14px 0}
+.error{color:var(--red);font-size:14px;margin-top:10px}.success{color:var(--green);font-size:14px;margin-top:10px}
+.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}.stat{padding:16px;border-radius:13px;background:#f8fafc;border:1px solid var(--line)}.stat strong{display:block;font-size:24px;margin-top:6px}
+.question{border:1px solid var(--line);padding:18px;border-radius:14px;margin:14px 0}.question-title{font-weight:750;margin-bottom:13px;line-height:1.5}.option{display:flex;gap:10px;align-items:flex-start;padding:11px;border:1px solid var(--line);border-radius:10px;margin:8px 0;cursor:pointer}.option:has(input:checked){background:#eef2ff;border-color:#818cf8}.option input{width:auto;margin-top:3px}
+.review-correct{border-left:4px solid #16a34a;background:#f0fdf4}.review-wrong{border-left:4px solid #dc2626;background:#fef2f2}.pill{display:inline-block;border-radius:100px;padding:5px 10px;background:#e0e7ff;color:#3730a3;font-size:12px;font-weight:800}
+hr{border:0;border-top:1px solid var(--line);margin:20px 0}.small{font-size:12px;color:var(--muted)}.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:0 16px 25px}
+@media(max-width:650px){header{padding:22px 18px}main{margin-top:18px}.card{padding:18px}.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.brand{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <div><div class="brand">Quiz<span>Hub</span></div><p>Quiz Management System · Teacher & Student Portal</p></div>
+  <span class="pill">HTML · CSS · JavaScript</span>
+</header>
+<main>
+  <div class="tabs">
+    <button class="tab active" id="teacherTab" onclick="showRole('teacher')">Teacher Portal</button>
+    <button class="tab" id="studentTab" onclick="showRole('student')">Student Portal</button>
+  </div>
+
+  <section class="card" id="loginCard">
+    <h2 id="loginTitle">Teacher Login</h2>
+    <p class="muted" id="loginSubtitle">Sign in to manage quiz questions.</p>
+    <div id="teacherLogin">
+      <div class="grid">
+        <div class="field"><label for="teacherUser">Teacher username</label><input id="teacherUser" autocomplete="username" placeholder="Enter username"></div>
+        <div class="field"><label for="teacherPass">Password</label><input id="teacherPass" type="password" autocomplete="current-password" placeholder="Enter password"></div>
+      </div>
+      <button class="primary" onclick="teacherLogin()">Login as Teacher</button>
+      <div class="notice">Demo teacher login: <b>teacher</b> / <b>teach123</b></div>
+    </div>
+    <div id="studentLogin" class="hidden">
+      <div class="grid">
+        <div class="field"><label for="enrollment">Enrollment number</label><input id="enrollment" autocomplete="username" placeholder="e.g. T2602040330043"></div>
+        <div class="field"><label for="studentPass">Password</label><input id="studentPass" type="password" autocomplete="current-password" placeholder="Enter password"></div>
+      </div>
+      <button class="primary" onclick="studentLogin()">Login as Student</button>
+      <div class="notice">Demo student accounts: <b>STU001 / student123</b> or <b>STU002 / student123</b>. This demo creates no real accounts.</div>
+    </div>
+    <div id="loginMessage" role="status"></div>
+  </section>
+
+  <section id="teacherPanel" class="hidden">
+    <div class="card">
+      <div class="topline"><div><h2>Teacher Dashboard</h2><p class="muted">Create and manage questions for the student quiz.</p></div><button class="ghost" onclick="logout()">Logout</button></div>
+      <div class="stats"><div class="stat"><span class="muted">Questions</span><strong id="questionCount">0</strong></div><div class="stat"><span class="muted">Marks per question</span><strong>1</strong></div><div class="stat"><span class="muted">Question type</span><strong style="font-size:18px">MCQ</strong></div></div>
+      <h3 id="formTitle">Add a Question</h3>
+      <div class="field"><label for="questionText">Question</label><textarea id="questionText" placeholder="Write your question here..."></textarea></div>
+      <div class="grid">
+        <div class="field"><label for="optionA">Option A</label><input id="optionA" placeholder="Option A"></div>
+        <div class="field"><label for="optionB">Option B</label><input id="optionB" placeholder="Option B"></div>
+        <div class="field"><label for="optionC">Option C</label><input id="optionC" placeholder="Option C"></div>
+        <div class="field"><label for="optionD">Option D</label><input id="optionD" placeholder="Option D"></div>
+      </div>
+      <div class="field"><label for="correctOption">Correct answer</label><select id="correctOption"><option value="0">Option A</option><option value="1">Option B</option><option value="2">Option C</option><option value="3">Option D</option></select></div>
+      <div class="actions"><button class="primary" id="saveQuestionBtn" onclick="saveQuestion()">Add Question</button><button class="secondary hidden" id="cancelEditBtn" onclick="cancelEdit()">Cancel Edit</button></div>
+      <div id="teacherMessage" role="status"></div>
+      <hr><div class="topline"><h3>Question Bank</h3><span class="small">Saved in this browser</span></div>
+      <div id="questionBank"></div>
+    </div>
+  </section>
+
+  <section id="studentPanel" class="hidden">
+    <div class="card">
+      <div class="topline"><div><h2>Student Dashboard</h2><p class="muted" id="studentWelcome"></p></div><button class="ghost" onclick="logout()">Logout</button></div>
+      <div id="studentHome">
+        <div class="notice">Read each question carefully. Each correct answer carries 1 mark. You can review your answers after submitting.</div>
+        <div class="stats"><div class="stat"><span class="muted">Available questions</span><strong id="availableCount">0</strong></div><div class="stat"><span class="muted">Total marks</span><strong id="totalMarks">0</strong></div><div class="stat"><span class="muted">Attempts</span><strong id="attemptCount">0</strong></div></div>
+        <button class="primary" id="startBtn" onclick="startQuiz()">Start Quiz</button>
+        <div id="studentMessage" role="status"></div>
+      </div>
+      <form id="quizForm" class="hidden" onsubmit="submitQuiz(event)">
+        <div class="topline"><h3>Quiz Questions</h3><span class="pill" id="quizProgress"></span></div>
+        <div id="quizQuestions"></div>
+        <button class="primary" type="submit">Submit Quiz</button>
+      </form>
+      <div id="resultPanel" class="hidden">
+        <hr><h2>Quiz Result</h2><div class="stats"><div class="stat"><span class="muted">Your marks</span><strong id="resultMarks">0/0</strong></div><div class="stat"><span class="muted">Percentage</span><strong id="resultPercent">0%</strong></div><div class="stat"><span class="muted">Correct answers</span><strong id="resultCorrect">0</strong></div></div>
+        <h3>Answer Review</h3><p class="muted">Wrong answers show the answer you selected and the correct answer.</p><div id="answerReview"></div>
+        <div class="actions"><button class="primary" onclick="retest()">Retest</button><button class="secondary" onclick="backToStudentHome()">Back to Dashboard</button></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>QuizHub Demo · For a real public deployment, connect a secure backend and database.</footer>
+<script>
+const DEFAULT_QUESTIONS = [
+ {id:1,text:"Which language is used to structure the content of a web page?",options:["HTML","CSS","SQL","Python"],correct:0},
+ {id:2,text:"Which language is mainly used to style a web page?",options:["Java","CSS","C","PHP"],correct:1},
+ {id:3,text:"Which JavaScript keyword declares a block-scoped variable that can be reassigned?",options:["const","let","static","define"],correct:1}
+];
+const DEMO_STUDENTS = {
+ "STU001":{password:"student123",name:"Demo Student 1"},
+ "STU002":{password:"student123",name:"Demo Student 2"}
+};
+const STORE_KEY="quizhub_questions_v1", ATTEMPT_KEY="quizhub_attempts_v1";
+let questions=loadQuestions(), currentRole=null, currentStudent=null, editingId=null, currentQuiz=[];
+function loadQuestions(){try{const x=JSON.parse(localStorage.getItem(STORE_KEY));return Array.isArray(x)&&x.length?x:DEFAULT_QUESTIONS.map(q=>({...q,options:[...q.options]}));}catch{return DEFAULT_QUESTIONS.map(q=>({...q,options:[...q.options]}));}}
+function saveQuestionsStorage(){localStorage.setItem(STORE_KEY,JSON.stringify(questions));}
+function readAttempts(){try{return JSON.parse(localStorage.getItem(ATTEMPT_KEY)||"{}");}catch{return {};}}
+function writeAttempts(a){localStorage.setItem(ATTEMPT_KEY,JSON.stringify(a));}
+function showRole(role){
+ currentRole=role;document.getElementById("teacherTab").classList.toggle("active",role==="teacher");document.getElementById("studentTab").classList.toggle("active",role==="student");
+ document.getElementById("teacherLogin").classList.toggle("hidden",role!=="teacher");document.getElementById("studentLogin").classList.toggle("hidden",role!=="student");
+ document.getElementById("loginTitle").textContent=role==="teacher"?"Teacher Login":"Student Login";document.getElementById("loginSubtitle").textContent=role==="teacher"?"Sign in to manage quiz questions.":"Sign in with your enrollment number and password.";
+ document.getElementById("loginMessage").textContent="";document.getElementById("loginCard").classList.remove("hidden");document.getElementById("teacherPanel").classList.add("hidden");document.getElementById("studentPanel").classList.add("hidden");
+}
+function setMessage(id,msg,type="error"){const el=document.getElementById(id);el.className=msg?(type==="success"?"success":"error"):"";el.textContent=msg;}
+function teacherLogin(){
+ const u=document.getElementById("teacherUser").value.trim(),p=document.getElementById("teacherPass").value;
+ if(u==="teacher"&&p==="teach123"){document.getElementById("loginCard").classList.add("hidden");document.getElementById("teacherPanel").classList.remove("hidden");renderTeacher();setMessage("teacherMessage","");}
+ else setMessage("loginMessage","Incorrect teacher username or password.");
+}
+function studentLogin(){
+ const enrollment=document.getElementById("enrollment").value.trim(),password=document.getElementById("studentPass").value,student=DEMO_STUDENTS[enrollment.toUpperCase()];
+ if(!student||student.password!==password){setMessage("loginMessage","Invalid enrollment number or password. Use a demo account shown above.");return;}
+ currentStudent={enrollment:enrollment.toUpperCase(),name:student.name};document.getElementById("loginCard").classList.add("hidden");document.getElementById("studentPanel").classList.remove("hidden");document.getElementById("studentWelcome").textContent=`Welcome, ${student.name} · Enrollment: ${currentStudent.enrollment}`;backToStudentHome();
+}
+function logout(){currentStudent=null;currentRole=null;cancelEdit();showRole("teacher");}
+function saveQuestion(){
+ const text=document.getElementById("questionText").value.trim(),options=["optionA","optionB","optionC","optionD"].map(id=>document.getElementById(id).value.trim()),correct=Number(document.getElementById("correctOption").value);
+ if(!text||options.some(o=>!o)){setMessage("teacherMessage","Please fill in the question and all four options.");return;}
+ if(new Set(options.map(o=>o.toLowerCase())).size!==4){setMessage("teacherMessage","Please make all four options different.");return;}
+ if(editingId!==null){questions=questions.map(q=>q.id===editingId?{...q,text,options,correct}:q);setMessage("teacherMessage","Question updated successfully.","success");}
+ else{questions.push({id:Date.now(),text,options,correct});setMessage("teacherMessage","Question added successfully.","success");}
+ saveQuestionsStorage();cancelEdit();renderTeacher();
+}
+function renderTeacher(){
+ document.getElementById("questionCount").textContent=questions.length;
+ const bank=document.getElementById("questionBank");
+ if(!questions.length){bank.innerHTML='<p class="muted">No questions yet. Add your first question above.</p>';return;}
+ bank.innerHTML=questions.map((q,i)=>`<div class="question"><div class="question-title">${i+1}. ${escapeHTML(q.text)}</div><p class="muted">Correct answer: ${"ABCD"[q.correct]} — ${escapeHTML(q.options[q.correct])}</p><div class="actions"><button class="secondary" onclick="editQuestion(${q.id})">Edit</button><button class="danger" onclick="deleteQuestion(${q.id})">Delete</button></div></div>`).join("");
+}
+function editQuestion(id){const q=questions.find(x=>x.id===id);if(!q)return;editingId=id;document.getElementById("questionText").value=q.text;["optionA","optionB","optionC","optionD"].forEach((x,i)=>document.getElementById(x).value=q.options[i]);document.getElementById("correctOption").value=q.correct;document.getElementById("formTitle").textContent="Edit Question";document.getElementById("saveQuestionBtn").textContent="Save Changes";document.getElementById("cancelEditBtn").classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"});}
+function cancelEdit(){editingId=null;["questionText","optionA","optionB","optionC","optionD"].forEach(id=>document.getElementById(id).value="");document.getElementById("correctOption").value="0";document.getElementById("formTitle").textContent="Add a Question";document.getElementById("saveQuestionBtn").textContent="Add Question";document.getElementById("cancelEditBtn").classList.add("hidden");}
+function deleteQuestion(id){if(!confirm("Delete this question?"))return;questions=questions.filter(q=>q.id!==id);saveQuestionsStorage();renderTeacher();setMessage("teacherMessage","Question deleted.","success");}
+function refreshStudentStats(){
+ const attempts=readAttempts(),mine=attempts[currentStudent.enrollment]||[];
+ document.getElementById("availableCount").textContent=questions.length;document.getElementById("totalMarks").textContent=questions.length;document.getElementById("attemptCount").textContent=mine.length;
+ document.getElementById("startBtn").disabled=questions.length===0;document.getElementById("startBtn").textContent=questions.length?"Start Quiz":"No Questions Available";
+}
+function backToStudentHome(){document.getElementById("studentHome").classList.remove("hidden");document.getElementById("quizForm").classList.add("hidden");document.getElementById("resultPanel").classList.add("hidden");setMessage("studentMessage","");refreshStudentStats();}
+function startQuiz(){
+ if(!questions.length){setMessage("studentMessage","The teacher has not added any questions yet.");return;}
+ currentQuiz=questions.map(q=>({...q,options:[...q.options]}));document.getElementById("studentHome").classList.add("hidden");document.getElementById("resultPanel").classList.add("hidden");document.getElementById("quizForm").classList.remove("hidden");document.getElementById("quizProgress").textContent=`${currentQuiz.length} questions · ${currentQuiz.length} marks`;
+ document.getElementById("quizQuestions").innerHTML=currentQuiz.map((q,i)=>`<div class="question"><div class="question-title">${i+1}. ${escapeHTML(q.text)}</div>${q.options.map((opt,j)=>`<label class="option"><input type="radio" name="q_${q.id}" value="${j}"><span><b>${"ABCD"[j]}.</b> ${escapeHTML(opt)}</span></label>`).join("")}</div>`).join("");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function submitQuiz(event){
+ event.preventDefault();if(!currentQuiz.length)return;
+ const answers={};let score=0;
+ currentQuiz.forEach(q=>{const selected=document.querySelector(`input[name="q_${q.id}"]:checked`);answers[q.id]=selected?Number(selected.value):null;if(answers[q.id]===q.correct)score++;});
+ const attempts=readAttempts();attempts[currentStudent.enrollment]=attempts[currentStudent.enrollment]||[];attempts[currentStudent.enrollment].push({date:new Date().toISOString(),score,total:currentQuiz.length});writeAttempts(attempts);
+ document.getElementById("quizForm").classList.add("hidden");document.getElementById("resultPanel").classList.remove("hidden");document.getElementById("resultMarks").textContent=`${score}/${currentQuiz.length}`;document.getElementById("resultPercent").textContent=`${Math.round(score/currentQuiz.length*100)}%`;document.getElementById("resultCorrect").textContent=score;
+ document.getElementById("answerReview").innerHTML=currentQuiz.map((q,i)=>{const selected=answers[q.id],correct=selected===q.correct;return `<div class="question ${correct?"review-correct":"review-wrong"}"><div class="question-title">${i+1}. ${escapeHTML(q.text)}</div><p><b>Your answer:</b> ${selected===null?'<span class="muted">Not answered</span>':`${"ABCD"[selected]}. ${escapeHTML(q.options[selected])}`}</p><p><b>Correct answer:</b> ${"ABCD"[q.correct]}. ${escapeHTML(q.options[q.correct])}</p><span class="pill" style="${correct?"background:#dcfce7;color:#166534":"background:#fee2e2;color:#991b1b"}">${correct?"Correct · +1 mark":"Incorrect · 0 marks"}</span></div>`;}).join("");
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+function retest(){startQuiz();}
+function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+showRole("teacher");
+</script>
+</body>
+</html>
+'''
+path = Path("/mnt/data/index.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created {path} ({path.stat().st_size:,} bytes)")
